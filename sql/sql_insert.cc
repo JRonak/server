@@ -3100,14 +3100,10 @@ static void free_delayed_insert_blobs(register TABLE *table)
 {
   for (Field **ptr=table->field ; *ptr ; ptr++)
   {
-    Field_blob *f= (Field_blob*)(*ptr);
-    if (f->flags & BLOB_FLAG)
+    if ((*ptr)->flags & BLOB_FLAG)
     {
-      if (f->vcol_info)
-        f->free();
-      else
-        my_free(f->get_ptr());
-      f->reset();
+      my_free(((Field_blob *) (*ptr))->get_ptr());
+      ((Field_blob *) (*ptr))->reset();
     }
   }
 }
@@ -3235,8 +3231,6 @@ bool Delayed_insert::handle_inserts(void)
     if (info.handle_duplicates == DUP_UPDATE)
       table->file->extra(HA_EXTRA_INSERT_WITH_UPDATE);
     thd.clear_error(); // reset error for binlog
-    if (table->vfield)
-      table->update_virtual_fields(VCOL_UPDATE_FOR_WRITE);
     if (write_record(&thd, table, &info))
     {
       info.error_count++;				// Ignore errors

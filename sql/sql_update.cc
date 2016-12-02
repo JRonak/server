@@ -2327,7 +2327,6 @@ int multi_update::do_updates()
       goto err;
     }
     table->file->extra(HA_EXTRA_NO_CACHE);
-    empty_record(table);
 
     check_opt_it.rewind();
     while(TABLE *tbl= check_opt_it++)
